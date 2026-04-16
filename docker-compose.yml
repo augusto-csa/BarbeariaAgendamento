@@ -1,0 +1,44 @@
+services:
+  # 1. Nosso Banco de Dados
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432" # Expõe a porta para você poder ver o banco na sua máquina
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Salva os dados para não perder quando o container desligar
+
+  # 2. Nossa API Spring Boot
+  backend:
+    build: ./backend # Diz ao Docker para ler o Dockerfile da pasta backend
+    ports:
+      - "${API_PORT}:8080"
+    environment:
+      # A MÁGICA: Veja que o link do banco usa "db:5432".
+      # O Docker entende que "db" é o nome do container ali de cima!
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update # Cria as tabelas automaticamente
+    depends_on:
+      - db # O backend só liga depois que o banco estiver pronto
+
+  # 3. Nossa Interface React
+  frontend:
+    build: ./frontend # Lê o Dockerfile da pasta frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      # Isso cria um "túnel" entre o seu PC e o container.
+      # Quando você alterar o código no seu editor, o container atualiza na hora!
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+# Declaração do volume persistente para o banco de dados
+volumes:
+  postgres_data:

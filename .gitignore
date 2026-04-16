@@ -1,0 +1,42 @@
+# ==========================================
+# 1. Segredos e Configurações (CRÍTICO)
+# ==========================================
+.env
+.github
+
+# ==========================================
+# 2. Frontend (React / Vite / NPM)
+# ==========================================
+**/node_modules/
+**/dist/
+**/dist-ssr/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+
+# ==========================================
+# 3. Backend (Java / Spring Boot / Maven)
+# ==========================================
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+**/*.log
+*.class
+*.jar
+*.war
+
+# ==========================================
+# 4. Arquivos de IDEs (VS Code, IntelliJ, Eclipse)
+# ==========================================
+.idea/
+.vscode/
+*.iml
+.settings/
+.classpath
+.project
+
+# ==========================================
+# 5. Arquivos do Sistema Operacional
+# ==========================================
+.DS_Store
+Thumbs.db
