@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.agendamento.barbearia.feature.profissional.dto.ProfissionalRequestDTO;
 import com.agendamento.barbearia.feature.usuario.dto.UsuarioRequestDTO;
 import com.agendamento.barbearia.feature.usuario.dto.UsuarioResponseDTO;
 import com.agendamento.barbearia.feature.usuario.mapper.UsuarioMapper;
@@ -35,6 +36,16 @@ public class UsuarioService {
         user.setSenha(senhaCriptografada);
         user = repo.save(user);
         return mapper.toResponse(user);
+    }
+
+    public Usuario criarContaBarbeiro(ProfissionalRequestDTO request) {
+        Usuario u = new Usuario();
+        u.setNome(request.getNome());
+        u.setEmail(request.getEmail());
+        u.setFotoUrl(request.getFotoUrl());
+        u.setSenha(passwordEncoder.encode(request.getSenha()));
+        u.setRole("BARBEIRO");
+        return repo.save(u);
     }
 
 }

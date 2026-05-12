@@ -39,8 +39,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**", "/public/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+                .requestMatchers(HttpMethod.GET, "/profissionais").permitAll()
+                .requestMatchers(HttpMethod.POST, "/profissionais").permitAll()
                 .anyRequest().authenticated()
             )
+            
             // 2. O PULO DO GATO: Se não estiver logado, retorna 401 (Unauthorized) 
             // em vez de 302 (Redirect). Isso evita o erro de CORS no Axios!
             .exceptionHandling(e -> e
