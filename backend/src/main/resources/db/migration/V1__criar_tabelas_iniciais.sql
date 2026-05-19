@@ -34,3 +34,10 @@ CREATE TABLE agendamentos_servicos (
     servico_id BIGINT NOT NULL REFERENCES servicos(id),
     PRIMARY KEY (agendamento_id, servico_id)
 );
+
+CREATE TABLE profissionais_servicos (
+    id BIGSERIAL PRIMARY KEY,
+    profissional_id BIGINT NOT NULL REFERENCES profissionais(id),
+    servico_id BIGINT NOT NULL REFERENCES servicos(id),
+    UNIQUE(profissional_id, servico_id) -- Impede duplicados!
+);

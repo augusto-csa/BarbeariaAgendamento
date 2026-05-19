@@ -41,7 +41,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                 .requestMatchers(HttpMethod.GET, "/profissionais").permitAll()
                 .requestMatchers(HttpMethod.POST, "/profissionais").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers(HttpMethod.POST, "/servicos").permitAll()
+                .requestMatchers( "/profissionais-servicos/**").permitAll()
+                .anyRequest().permitAll()
             )
             
             // 2. O PULO DO GATO: Se não estiver logado, retorna 401 (Unauthorized) 

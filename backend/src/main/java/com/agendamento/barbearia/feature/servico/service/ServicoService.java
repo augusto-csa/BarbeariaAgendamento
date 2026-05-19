@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.agendamento.barbearia.feature.servico.dto.ServicoRequestDTO;
+import com.agendamento.barbearia.feature.servico.dto.ServicoResponseDTO;
+import com.agendamento.barbearia.feature.servico.mapper.ServicoMapper;
 import com.agendamento.barbearia.feature.servico.model.Servico;
 import com.agendamento.barbearia.feature.servico.repo.ServicoRepository;
 
@@ -13,13 +16,18 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class ServicoService {
     
+    private final ServicoMapper mapper;
     private final ServicoRepository repo;
 
-    public List<Servico> findAll() {
-        return repo.findAll();
+    public List<ServicoResponseDTO> findAll() {
+        return repo.findAll()
+        .stream()
+        .map(mapper::toResponseDTO)
+        .toList();
     }
 
-    public Servico save(Servico servico) {
-        return repo.save(servico);
+    public ServicoResponseDTO save(ServicoRequestDTO servico) {
+        Servico s = mapper.toEntity(servico);
+        return mapper.toResponseDTO(repo.save(s));
     }
 }
