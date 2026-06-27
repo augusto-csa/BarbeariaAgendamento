@@ -2,6 +2,8 @@ package com.agendamento.barbearia.feature.profissional_servico.service;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.agendamento.barbearia.feature.profissional.model.Profissional;
 import com.agendamento.barbearia.feature.profissional.repo.ProfissionalRepository;
 import com.agendamento.barbearia.feature.profissional_servico.dto.ProfissionalServicoRequestDTO;
@@ -36,6 +38,7 @@ public class ProfissionalServicoService {
         return mapper.toResponseDTO(repo.save(vinculo));
     }
 
+    @Transactional(readOnly = true)
     public List<ProfissionalServicoResponseDTO> buscarServicosDoBarbeiro(Long profissionalId) {
         return repo.findByProfissionalId(profissionalId)
                 .stream()

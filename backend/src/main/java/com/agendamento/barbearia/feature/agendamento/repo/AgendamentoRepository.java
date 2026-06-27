@@ -23,4 +23,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
         @Param("inicioDia") LocalDateTime inicioDia, 
         @Param("fimDia") LocalDateTime fimDia
     );
+
+    @Query("SELECT DISTINCT a FROM Agendamento a LEFT JOIN FETCH a.servicos WHERE a.profissional.id = :profissionalId ORDER BY a.dataHora ASC")
+    List<Agendamento> findByProfissionalIdComServicos(@Param("profissionalId") Long profissionalId);
 }

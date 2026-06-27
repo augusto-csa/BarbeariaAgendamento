@@ -1,8 +1,12 @@
 package com.agendamento.barbearia.feature.agendamento.service;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -91,7 +95,7 @@ public class AgendamentoService {
     if (!dentroDoExpediente) {
         throw new IllegalArgumentException("Fora do horário de expediente! O barbeiro não atende neste horário na " + diaDesejado);
     }
-    
+
     // 3. Busca a agenda do barbeiro APENAS para o dia solicitado (Performance!)
     LocalDateTime inicioDoDia = inicioDesejado.toLocalDate().atStartOfDay();
     LocalDateTime fimDoDia = inicioDesejado.toLocalDate().atTime(23, 59, 59);
@@ -130,5 +134,62 @@ public class AgendamentoService {
     
     Agendamento agendamentoSalvo = repo.save(agendamento);
     return mapper.toResponseDTO(agendamentoSalvo);
+  }
+
+  public List<String> buscarHorariosDisponiveis(Long profissionalId, LocalDate data) {
+        DayOfWeek diaSemana = data.getDayOfWeek();
+        
+        // 1. Busca os turnos de trabalho do barbeiro naquele dia da semana
+        List<HorarioTrabalho> turnos = horarioRepo.findByProfissionalIdAndDiaSemana(profissionalId, diaSemana);
+        if (turnos.isEmpty()) {
+            return Collections.emptyList(); // Não trabalha neste dia
+        }
+
+        // 2. Busca o que já está marcado neste dia
+        LocalDateTime inicioDoDia = data.atStartOfDay();
+        LocalDateTime fimDoDia = data.atTime(23, 59, 59);
+        List<Agendamento> agendamentosDoDia = repo.buscarAgendaDoBarbeiroNoDia(profissionalId, inicioDoDia, fimDoDia);
+
+        List<String> horariosLivres = new ArrayList<>();
+        int intervaloMinutos = 30; // Vamos gerar horários de 30 em 30 minutos
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        // 3. Para cada turno (ex: Manhã, Tarde), gera os "slots"
+        for (HorarioTrabalho turno : turnos) {
+            LocalTime horaSlot = turno.getHoraInicio();
+            
+            // Enquanto o slot couber dentro do turno
+            while (!horaSlot.plusMinutes(intervaloMinutos).isAfter(turno.getHoraFim())) {
+                LocalDateTime inicioSlot = data.atTime(horaSlot);
+                LocalDateTime fimSlot = inicioSlot.plusMinutes(intervaloMinutos);
+
+                // Verifica se este slot choca com algum agendamento existente
+                boolean temColisao = agendamentosDoDia.stream().anyMatch(agendamento -> {
+                    LocalDateTime aInicio = agendamento.getDataHora();
+                    int duracao = agendamento.getServicos().stream().mapToInt(Servico::getDuracaoMinutos).sum();
+                    LocalDateTime aFim = aInicio.plusMinutes(duracao);
+                    
+                    // Fórmula de intersecção
+                    return inicioSlot.isBefore(aFim) && fimSlot.isAfter(aInicio);
+                });
+
+                if (!temColisao) {
+                    horariosLivres.add(horaSlot.format(formatter));
+                }
+                
+                // Avança para o próximo bloco de 30 mins
+                horaSlot = horaSlot.plusMinutes(intervaloMinutos);
+            }
+        }
+
+        return horariosLivres;
+    }
+
+    public List<AgendamentoResponseDTO> buscarAgendaDoBarbeiro(Long profissionalId) {
+      return repo.findByProfissionalIdComServicos(profissionalId)
+              .stream()
+              .map(mapper::toResponseDTO)
+              .toList();
   }
 }

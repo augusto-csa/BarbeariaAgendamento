@@ -1,27 +1,42 @@
 import { useEffect, useState } from "react";
 import { api } from "./services/api";
-import { AppRoutes } from "./routes"; // Importamos o arquivo que acabamos de criar
+import { AppRoutes } from "./routes";
+
+// Interface global para o utilizador
+export interface AuthUser {
+  id: number;
+  nome: string;
+  email: string;
+  fotoUrl?: string;
+  role: string;
+  profissionalId?: number;
+}
 
 export default function App() {
-  const [auth, setAuth] = useState<"loading" | "yes" | "no">("loading");
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Verifica se o cookie de sessão é válido lá no Backend
     api
       .get("/usuarios/me")
-      .then(() => setAuth("yes"))
-      .catch(() => setAuth("no"));
+      .then((res) => {
+        setUser(res.data);
+      })
+      .catch(() => {
+        setUser(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
-  // Tela de Loading Global (aparece rapidamente enquanto o React fala com o Java)
-  if (auth === "loading") {
+  if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-900 text-white font-bold">
-        Loading...
+        A carregar...
       </div>
     );
   }
 
-  // Passa o resultado da verificação para o nosso novo arquivo de rotas
-  return <AppRoutes isAuthenticated={auth === "yes"} />;
+  return <AppRoutes user={user} />;
 }
