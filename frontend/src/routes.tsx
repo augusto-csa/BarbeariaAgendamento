@@ -2,36 +2,92 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./components/Login";
 import { Register } from "./components/Register";
 import { Home } from "./components/Home";
+import { Booking } from "./components/Booking";
+import { BarberDashboard } from "./components/BarberDashboard";
+import type { AuthUser } from "./App";
 import type { JSX } from "react/jsx-runtime";
 
-// Criamos um mini-componente para proteger as rotas que exigem login
 interface PrivateRouteProps {
-  isAuthenticated: boolean;
+  user: AuthUser | null;
+  allowedRoles?: string[];
   children: JSX.Element;
 }
 
-const PrivateRoute = ({ isAuthenticated, children }: PrivateRouteProps) => {
-  return isAuthenticated ? children : <Navigate to="/login" />;
+const PrivateRoute = ({ user, allowedRoles, children }: PrivateRouteProps) => {
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return user.role === "BARBEIRO" ? (
+      <Navigate to="/painel-barbeiro" replace />
+    ) : (
+      <Navigate to="/" replace />
+    );
+  }
+
+  return children;
 };
 
-// Este é o componente principal de Rotas que será exportado
 interface AppRoutesProps {
-  isAuthenticated: boolean;
+  user: AuthUser | null;
 }
 
-export function AppRoutes({ isAuthenticated }: AppRoutesProps) {
+export function AppRoutes({ user }: AppRoutesProps) {
   return (
     <Routes>
-      {/* Rotas Públicas (Qualquer um pode acessar) */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route
+        path="/login"
+        element={
+          user ? (
+            <Navigate
+              to={user.role === "BARBEIRO" ? "/painel-barbeiro" : "/"}
+              replace
+            />
+          ) : (
+            <Login />
+          )
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          user ? (
+            <Navigate
+              to={user.role === "BARBEIRO" ? "/painel-barbeiro" : "/"}
+              replace
+            />
+          ) : (
+            <Register />
+          )
+        }
+      />
 
-      {/* Rotas Privadas (Exigem Login) */}
+      {/* ÁREA DO CLIENTE */}
       <Route
         path="/"
         element={
-          <PrivateRoute isAuthenticated={isAuthenticated}>
-            <Home />
+          <PrivateRoute user={user} allowedRoles={["CLIENTE", "ADMIN"]}>
+            <Home user={user} />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/book/:barberId"
+        element={
+          <PrivateRoute user={user} allowedRoles={["CLIENTE", "ADMIN"]}>
+            <Booking user={user} />
+          </PrivateRoute>
+        }
+      />
+
+      {/* ÁREA DO BARBEIRO */}
+      <Route
+        path="/painel-barbeiro"
+        element={
+          <PrivateRoute user={user} allowedRoles={["BARBEIRO", "ADMIN"]}>
+            <BarberDashboard user={user} />
           </PrivateRoute>
         }
       />

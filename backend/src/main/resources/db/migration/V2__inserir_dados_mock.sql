@@ -1,8 +1,8 @@
 -- 1. Inserir Usuários (Senhas mockadas como '123456' para teste)
 INSERT INTO usuarios (nome, email, telefone, senha, role) VALUES
-('João Chefe (Admin)', 'admin@barbearia.com', '11999999999', '123456', 'ADMIN'),
-('Carlos Barbeiro', 'carlos@barbearia.com', '11988888888', '123456', 'BARBEIRO'),
-('Pedro Cliente', 'pedro@gmail.com', '11977777777', '123456', 'CLIENTE');
+('João Chefe (Admin)', 'admin@barbearia.com', '11999999999', '$2a$10$wL2PJ.VXzgS5JZhGqnCVMuwq92xbjfPiDBVHusxpoOoyLwqNpgTAO', 'ADMIN'),
+('Carlos Barbeiro', 'carlos@barbearia.com', '11988888888', '$2a$10$wL2PJ.VXzgS5JZhGqnCVMuwq92xbjfPiDBVHusxpoOoyLwqNpgTAO', 'BARBEIRO'),
+('Pedro Cliente', 'pedro@gmail.com', '11977777777', '$2a$10$wL2PJ.VXzgS5JZhGqnCVMuwq92xbjfPiDBVHusxpoOoyLwqNpgTAO', 'CLIENTE');
 
 -- 2. Transformar o usuário 2 (Carlos) em um Profissional
 INSERT INTO profissionais (usuario_id, ativo) VALUES
