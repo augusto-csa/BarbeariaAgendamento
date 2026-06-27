@@ -30,4 +30,7 @@ public class Usuario {
   
   @Column(nullable = false)
   private String role; // CLIENTE, BARBEIRO, ADMIN
+
+  @Column(length = 1000, name = "foto_url")
+  private String fotoUrl;
 }
