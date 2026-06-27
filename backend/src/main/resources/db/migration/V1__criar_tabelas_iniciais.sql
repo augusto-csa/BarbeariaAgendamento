@@ -13,6 +13,14 @@ CREATE TABLE profissionais (
     ativo BOOLEAN DEFAULT TRUE
 );
 
+CREATE TABLE horarios_trabalho (
+    id BIGSERIAL PRIMARY KEY,
+    profissional_id BIGINT NOT NULL REFERENCES profissionais(id),
+    dia_semana VARCHAR(20) NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fim TIME NOT NULL
+);
+
 CREATE TABLE servicos (
     id BIGSERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,

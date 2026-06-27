@@ -23,3 +23,9 @@ INSERT INTO agendamentos (cliente_id, profissional_id, data_hora, status) VALUES
 INSERT INTO agendamentos_servicos (agendamento_id, servico_id) VALUES
 (1, 1), -- Corte Degradê
 (1, 2); -- Barba Terapia
+
+INSERT INTO horarios_trabalho (profissional_id, dia_semana, hora_inicio, hora_fim) 
+VALUES (1, 'MONDAY', '08:00:00', '12:00:00');
+
+INSERT INTO horarios_trabalho (profissional_id, dia_semana, hora_inicio, hora_fim) 
+VALUES (1, 'MONDAY', '14:00:00', '18:00:00');

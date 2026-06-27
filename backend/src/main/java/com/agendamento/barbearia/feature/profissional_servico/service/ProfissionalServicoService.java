@@ -36,7 +36,6 @@ public class ProfissionalServicoService {
         return mapper.toResponseDTO(repo.save(vinculo));
     }
 
-    // Método super útil para o React: Buscar todos os serviços de um barbeiro específico
     public List<ProfissionalServicoResponseDTO> buscarServicosDoBarbeiro(Long profissionalId) {
         return repo.findByProfissionalId(profissionalId)
                 .stream()
