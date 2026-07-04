@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "./services/api";
 import { AppRoutes } from "./routes";
-
-// Interface global para o utilizador
 export interface AuthUser {
   id: number;
   nome: string;

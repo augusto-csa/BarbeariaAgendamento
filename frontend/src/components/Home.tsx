@@ -11,6 +11,10 @@ interface Barbeiro {
   totalAvaliacoes: number;
 }
 
+/**
+ * Tela inicial do cliente (Home).
+ * Responsável por listar os profissionais disponíveis e fornecer atalhos para a agenda e logout.
+ */
 export function Home({ user }: { user: AuthUser }) {
   const [barbers, setBarbers] = useState<Barbeiro[]>([]);
   const navigate = useNavigate();
@@ -26,29 +30,29 @@ export function Home({ user }: { user: AuthUser }) {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=ffffff&bold=true`;
   };
 
-  // FUNÇÃO DE LOGOUT: Avisa o backend e limpa a sessão do navegador
+  /**
+   * Tenta invalidar a sessão ativa no backend (Spring Security)
+   * e redireciona para o login, limpando o estado global do frontend.
+   */
   const handleLogout = async () => {
     try {
-      // Tenta derrubar a sessão nos endpoints mais comuns do Spring Security
       await api.post("/auth/logout").catch(() => api.post("/logout"));
     } catch (err) {
       console.warn("Sessão encerrada no cliente.");
     } finally {
-      // Força o recarregamento para limpar estados globais e vai para o login
       window.location.href = "/login";
     }
   };
 
   return (
     <div className="max-w-md mx-auto bg-[#f9fafb] min-h-screen p-6 font-sans text-gray-800 pb-24">
-      {/* Cabeçalho do Cliente */}
+      {/* HEADER: Saudação e Menu do Usuário */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <p className="text-gray-500 text-sm font-medium">Olá,</p>
           <h1 className="text-2xl font-bold text-gray-900">{user.nome}</h1>
         </div>
 
-        {/* Ações de Perfil */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate("/meus-agendamentos")}
@@ -75,7 +79,7 @@ export function Home({ user }: { user: AuthUser }) {
         </div>
       </div>
 
-      {/* Barra de Busca */}
+      {/* BARRA DE BUSCA (Apenas visual por enquanto) */}
       <div className="relative mb-8 shadow-sm rounded-2xl">
         <input
           type="text"
@@ -93,7 +97,7 @@ export function Home({ user }: { user: AuthUser }) {
         </h2>
       </div>
 
-      {/* Lista de Barbeiros */}
+      {/* LISTAGEM DE BARBEIROS */}
       <div className="space-y-4">
         {barbers.length === 0 ? (
           <p className="text-gray-500 text-center py-4">

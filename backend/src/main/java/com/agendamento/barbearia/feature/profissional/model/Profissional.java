@@ -21,20 +21,19 @@ import lombok.Data;
 @Entity
 @Table(name = "profissionais")
 public class Profissional {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    // Relacionamento 1 para 1 com a tabela de Usuários
-    @OneToOne
-    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
-    private Usuario usuario;
-
-    private String biografia;
-
-    private Boolean ativo = true;
-
-    @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Avaliacao> avaliacoes = new ArrayList<>();
+  
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  
+  @OneToOne
+  @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+  private Usuario usuario;
+  
+  private String biografia;
+  
+  private Boolean ativo = true;
+  
+  @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Avaliacao> avaliacoes = new ArrayList<>();
 }

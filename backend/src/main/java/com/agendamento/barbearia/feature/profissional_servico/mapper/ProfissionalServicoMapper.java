@@ -10,18 +10,18 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class ProfissionalServicoMapper {
+  
+  private final ServicoMapper servicoMapper;
+  
+  public ProfissionalServicoResponseDTO toResponseDTO(ProfissionalServico pServico){
+    if(pServico == null) return null;
     
-    private final ServicoMapper servicoMapper;
-
-    public ProfissionalServicoResponseDTO toResponseDTO(ProfissionalServico pServico){
-        if(pServico == null) return null;
-
-        ProfissionalServicoResponseDTO dto = new ProfissionalServicoResponseDTO();
-
-        dto.setId(pServico.getId());
-        dto.setProfissionalId(pServico.getProfissional().getId());
-        dto.setServico(servicoMapper.toResponseDTO(pServico.getServico()));
-        
-        return dto;
-    }
+    ProfissionalServicoResponseDTO dto = new ProfissionalServicoResponseDTO();
+    
+    dto.setId(pServico.getId());
+    dto.setProfissionalId(pServico.getProfissional().getId());
+    dto.setServico(servicoMapper.toResponseDTO(pServico.getServico()));
+    
+    return dto;
+  }
 }

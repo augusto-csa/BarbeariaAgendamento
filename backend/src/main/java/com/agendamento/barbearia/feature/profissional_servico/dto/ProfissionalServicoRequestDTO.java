@@ -3,6 +3,6 @@ import lombok.Data;
 
 @Data
 public class ProfissionalServicoRequestDTO {
-    private Long profissionalId;
-    private Long servicoId;
+  private Long profissionalId;
+  private Long servicoId;
 }

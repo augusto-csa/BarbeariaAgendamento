@@ -4,6 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.agendamento.barbearia.feature.usuario.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
-    // Mágica do Spring: Ele cria a query de busca pelo e-mail automaticamente
-    Optional<Usuario> findByEmail(String email);
+  Optional<Usuario> findByEmail(String email);
 }

@@ -14,6 +14,11 @@ interface PrivateRouteProps {
   children: JSX.Element;
 }
 
+/**
+ * Componente de proteção de rotas (Route Guard).
+ * Intercepta o acesso garantindo que o usuário esteja logado e possua o nível de acesso (Role) exigido.
+ * Caso contrário, redireciona para a página de login ou para a rota adequada ao seu perfil.
+ */
 const PrivateRoute = ({ user, allowedRoles, children }: PrivateRouteProps) => {
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -34,6 +39,11 @@ interface AppRoutesProps {
   user: AuthUser | null;
 }
 
+/**
+ * Configuração central do roteamento da aplicação.
+ * Implementa a lógica de triagem inicial: se um usuário autenticado tentar acessar a tela de login/registro,
+ * ele é automaticamente redirecionado para o seu respectivo painel (Home para Clientes, Dashboard para Barbeiros).
+ */
 export function AppRoutes({ user }: AppRoutesProps) {
   return (
     <Routes>
@@ -64,7 +74,6 @@ export function AppRoutes({ user }: AppRoutesProps) {
         }
       />
 
-      {/* ÁREA DO CLIENTE */}
       <Route
         path="/"
         element={
@@ -83,7 +92,6 @@ export function AppRoutes({ user }: AppRoutesProps) {
         }
       />
 
-      {/* ÁREA DO BARBEIRO */}
       <Route
         path="/painel-barbeiro"
         element={

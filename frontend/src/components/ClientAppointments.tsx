@@ -20,6 +20,10 @@ interface Agendamento {
   }>;
 }
 
+/**
+ * Componente que exibe o histórico e os próximos agendamentos do cliente,
+ * permitindo o cancelamento de horários confirmados.
+ */
 export function ClientAppointments({ user }: { user: AuthUser }) {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,18 +43,23 @@ export function ClientAppointments({ user }: { user: AuthUser }) {
     carregarAgendamentos();
   }, [user.id]);
 
-  // NOVA FUNÇÃO: Cancelar Agendamento
+  /**
+   * Altera o status do agendamento para CANCELADO no backend e recarrega a listagem.
+   */
   const handleCancelar = async (id: number) => {
     if (window.confirm("Tem a certeza que deseja cancelar este agendamento?")) {
       try {
         await api.patch(`/agendamentos/${id}/cancelar`);
-        carregarAgendamentos(); // Recarrega a lista para atualizar o status na tela
+        carregarAgendamentos();
       } catch (err) {
         alert("Erro ao cancelar o agendamento.");
       }
     }
   };
 
+  /**
+   * Remove o item apenas da visualização atual da interface sem alterar o banco de dados.
+   */
   const handleEsconderVisualmente = (id: number) => {
     setAgendamentos((prev) =>
       prev.filter((agendamento) => agendamento.id !== id),
@@ -73,7 +82,7 @@ export function ClientAppointments({ user }: { user: AuthUser }) {
 
   return (
     <div className="max-w-md mx-auto bg-[#f9fafb] min-h-screen p-6 font-sans text-gray-800 pb-24">
-      {/* Cabeçalho */}
+      {/* HEADER */}
       <div className="flex items-center gap-4 mb-8">
         <button
           onClick={() => navigate(-1)}
@@ -91,14 +100,13 @@ export function ClientAppointments({ user }: { user: AuthUser }) {
         </div>
       </div>
 
-      {/* Alertas */}
       {error && (
         <div className="bg-red-100 text-red-700 p-4 rounded-xl mb-6 text-sm font-bold border border-red-200">
           {error}
         </div>
       )}
 
-      {/* Lista de Agendamentos */}
+      {/* CONTEÚDO PRINCIPAL */}
       {loading ? (
         <p className="text-gray-400 font-medium animate-pulse">
           A procurar os seus agendamentos...
@@ -132,7 +140,6 @@ export function ClientAppointments({ user }: { user: AuthUser }) {
                 key={agendamento.id}
                 className={`p-5 rounded-3xl shadow-sm border flex gap-4 ${isCancelado ? "bg-gray-50 border-gray-200 opacity-70" : "bg-white border-gray-50"}`}
               >
-                {/* Data e Hora */}
                 <div className="flex flex-col items-center justify-center border-r border-gray-100 pr-4 min-w-[70px]">
                   <span className="text-lg font-black text-gray-900">
                     {formatTime(agendamento.dataHora)}
@@ -142,7 +149,6 @@ export function ClientAppointments({ user }: { user: AuthUser }) {
                   </span>
                 </div>
 
-                {/* Detalhes do Serviço */}
                 <div className="flex-1">
                   <div className="flex justify-between items-start mb-1">
                     <h3
@@ -156,7 +162,6 @@ export function ClientAppointments({ user }: { user: AuthUser }) {
                       >
                         {agendamento.status}
                       </span>
-                      {/* Botão de fechar se estiver cancelado */}
                       {isCancelado && (
                         <button
                           onClick={() =>
@@ -180,7 +185,6 @@ export function ClientAppointments({ user }: { user: AuthUser }) {
                       R$ {totalPreco.toFixed(2)}
                     </span>
 
-                    {/* Botão de Cancelar - Só aparece se não estiver cancelado */}
                     {!isCancelado && (
                       <button
                         onClick={() => handleCancelar(agendamento.id)}

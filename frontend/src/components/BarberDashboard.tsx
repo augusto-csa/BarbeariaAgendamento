@@ -33,15 +33,12 @@ const DIAS_SEMANA = [
 ];
 
 export function BarberDashboard({ user }: { user: AuthUser }) {
-  // Controle de Abas: 'agenda' ou 'config'
   const [activeTab, setActiveTab] = useState<"agenda" | "config">("agenda");
 
-  // Estados da Agenda
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [loadingAgenda, setLoadingAgenda] = useState(true);
   const [error, setError] = useState("");
 
-  // Estados de Configuração (Onboarding)
   const [servicosDisponiveis, setServicosDisponiveis] = useState<
     ServicoMaster[]
   >([]);
@@ -72,17 +69,15 @@ export function BarberDashboard({ user }: { user: AuthUser }) {
     }
   };
 
-  // Carrega os dados iniciais
+  // Inicializa a agenda, os serviços globais e os já vinculados ao profissional
   useEffect(() => {
     carregarAgendamentos();
 
-    // Carrega a lista master de serviços cadastrados na barbearia para o barbeiro escolher
     api
       .get("/servicos")
       .then((res) => setServicosDisponiveis(res.data))
       .catch(() => console.error("Erro ao carregar serviços master"));
 
-    // Se o barbeiro já tiver serviços vinculados, carrega-os para virem marcados
     if (user.profissionalId) {
       api
         .get(`/profissionais-servicos/barbeiro/${user.profissionalId}`)
@@ -112,7 +107,7 @@ export function BarberDashboard({ user }: { user: AuthUser }) {
     setAgendamentos((prev) => prev.filter((a) => a.id !== id));
   };
 
-  // Salva as configurações de Horários e Serviços de uma vez só!
+  // Valida e salva em lote (bulk) os serviços selecionados e a escala de horários
   const handleSalvarConfiguracoes = async () => {
     if (servicosSelecionados.length === 0) {
       alert("Por favor, selecione pelo menos um serviço que você realiza.");
@@ -121,26 +116,24 @@ export function BarberDashboard({ user }: { user: AuthUser }) {
 
     for (const [dia, dados] of Object.entries(escalaTrabalho)) {
       if (dados.ativo) {
-        // Como o formato é sempre "HH:mm" em 24h no JS, a comparação de strings funciona perfeitamente!
+        // Valida se a hora de saída é posterior à entrada (comparação de strings HH:mm)
         if (dados.inicio >= dados.fim) {
           const nomeDia = DIAS_SEMANA.find((d) => d.key === dia)?.label;
           alert(
             `Erro na ${nomeDia}: O horário de saída (${dados.fim}) não pode ser antes ou igual ao horário de entrada (${dados.inicio}).`,
           );
-          return; // Trava a execução aqui e não envia para o backend!
+          return;
         }
       }
     }
 
     setSalvandoConfig(true);
     try {
-      // 1. Salva os Serviços Vinculados
       await api.post(
         `/profissionais-servicos/vincular-em-lote/${user.profissionalId}`,
         servicosSelecionados,
       );
 
-      // 2. Formata e Salva a Escala de Horários
       const horariosPayload = Object.entries(escalaTrabalho)
         .filter(([_, dados]) => dados.ativo)
         .map(([dia, dados]) => ({
@@ -188,26 +181,26 @@ export function BarberDashboard({ user }: { user: AuthUser }) {
       hour: "2-digit",
       minute: "2-digit",
     });
+
   const formatDate = (isoString: string) =>
     new Date(isoString).toLocaleDateString("pt-BR", {
       day: "2-digit",
       month: "short",
     });
+
   const handleLogout = async () => {
     try {
-      // Tenta derrubar a sessão no backend para invalidar o cookie
       await api.post("/auth/logout").catch(() => api.post("/logout"));
     } catch (err) {
       console.warn("Sessão encerrada.");
     } finally {
-      // Só depois de limpar a sessão é que vamos para o login
       window.location.href = "/login";
     }
   };
 
   return (
     <div className="max-w-md mx-auto bg-[#f9fafb] min-h-screen p-6 font-sans text-gray-800 pb-24">
-      {/* Cabeçalho */}
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <div>
           <p className="text-gray-500 text-sm font-medium">
@@ -225,7 +218,7 @@ export function BarberDashboard({ user }: { user: AuthUser }) {
         </button>
       </div>
 
-      {/* Menu de Abas (Tabs) */}
+      {/* TABS NAVEGAÇÃO */}
       <div className="flex bg-gray-200/60 p-1 rounded-2xl mb-6">
         <button
           onClick={() => setActiveTab("agenda")}
@@ -241,7 +234,7 @@ export function BarberDashboard({ user }: { user: AuthUser }) {
         </button>
       </div>
 
-      {/* ABA 1: LISTA DA AGENDA */}
+      {/* CONTEÚDO: AGENDA */}
       {activeTab === "agenda" && (
         <div className="space-y-4">
           {error && (
@@ -333,10 +326,9 @@ export function BarberDashboard({ user }: { user: AuthUser }) {
         </div>
       )}
 
-      {/* ABA 2: CONFIGURAÇÃO DE SERVIÇOS E HORÁRIOS (ONBOARDING) */}
+      {/* CONTEÚDO: CONFIGURAÇÃO DE PERFIL */}
       {activeTab === "config" && (
         <div className="space-y-6">
-          {/* Seção de Serviços */}
           <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
             <h2 className="text-lg font-black text-gray-900 mb-1">
               Meus Serviços
@@ -371,7 +363,6 @@ export function BarberDashboard({ user }: { user: AuthUser }) {
             </div>
           </div>
 
-          {/* Seção de Horários */}
           <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
             <h2 className="text-lg font-black text-gray-900 mb-1">
               Horário de Trabalho
@@ -389,7 +380,6 @@ export function BarberDashboard({ user }: { user: AuthUser }) {
                     key={dia.key}
                     className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50/50 transition"
                   >
-                    {/* Checkbox Liga/Desliga o Dia */}
                     <label className="flex items-center gap-2 cursor-pointer min-w-[120px]">
                       <input
                         type="checkbox"
@@ -406,7 +396,6 @@ export function BarberDashboard({ user }: { user: AuthUser }) {
                       </span>
                     </label>
 
-                    {/* Inputs de Hora Entrada / Saída */}
                     {config.ativo ? (
                       <div className="flex items-center gap-1.5">
                         <input
@@ -444,7 +433,6 @@ export function BarberDashboard({ user }: { user: AuthUser }) {
             </div>
           </div>
 
-          {/* Botão de Gravar Configurações */}
           <button
             onClick={handleSalvarConfiguracoes}
             disabled={salvandoConfig}

@@ -2,11 +2,15 @@ import { useState } from "react";
 import { api } from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
 
+/**
+ * Tela de criação de conta (Registro).
+ * Permite o cadastro de novos usuários e a definição do perfil de acesso (Cliente ou Barbeiro).
+ */
 export function Register() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isBarber, setIsBarber] = useState(false); // NOVO ESTADO
+  const [isBarber, setIsBarber] = useState(false);
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -18,16 +22,16 @@ export function Register() {
     setError("");
 
     try {
-      // Envia os dados para a nossa API Java
+      // A role do usuário é definida dinamicamente no payload de acordo com o checkbox
       await api.post("/usuarios", {
         nome,
         email,
         senha: password,
-        role: isBarber ? "BARBEIRO" : "CLIENTE", // Define a role com base na checkbox
+        role: isBarber ? "BARBEIRO" : "CLIENTE",
       });
 
       alert("Conta criada com sucesso! Faça login para continuar.");
-      navigate("/login"); // Redireciona para o login após criar a conta
+      navigate("/login");
     } catch (err: any) {
       setError(
         err.response?.data?.message ||
@@ -92,7 +96,7 @@ export function Register() {
               required
             />
 
-            {/* CHECKBOX PARA SER BARBEIRO */}
+            {/* SELEÇÃO DE PERFIL PROFISSIONAL */}
             <label className="flex items-center gap-3 py-2 cursor-pointer group">
               <div
                 className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${isBarber ? "bg-white border-white" : "border-white/40 group-hover:border-white/70"}`}

@@ -4,11 +4,16 @@ import {
   type AppointmentResponse,
 } from "../services/AppointmentService";
 
+/**
+ * Componente responsável por exibir o painel geral de agendamentos.
+ * Gerencia o ciclo de vida da requisição (carregamento, sucesso e erro).
+ */
 export function AppointmentDashboard() {
   const [appointments, setAppointments] = useState<AppointmentResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Dispara a busca dos dados assim que o componente é montado na tela
   useEffect(() => {
     loadAppointments();
   }, []);
@@ -31,6 +36,7 @@ export function AppointmentDashboard() {
     return date.toLocaleString();
   };
 
+  // Tratamento de estados de interface para feedback ao usuário
   if (isLoading) return <h2>Loading appointments...</h2>;
   if (error) return <h2 style={{ color: "red" }}>{error}</h2>;
 

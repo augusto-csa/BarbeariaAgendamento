@@ -13,29 +13,38 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 
+/**
+* Camada de serviço para a gestão da agenda e turnos de atendimento dos barbeiros.
+*/
 @Service
 @RequiredArgsConstructor
 public class HorarioTrabalhoService {
-
-    private final HorarioTrabalhoRepository repo;
-    private final ProfissionalRepository profissionalRepo;
-
-    @Transactional
-    public void atualizarHorariosDoProfissional(Long profissionalId, List<HorarioTrabalhoDTO> horariosDTO) {
-        Profissional profissional = profissionalRepo.findById(profissionalId)
-                .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
-
-        repo.deleteByProfissionalId(profissionalId);
-
-        List<HorarioTrabalho> novosHorarios = horariosDTO.stream().map(dto -> {
-            HorarioTrabalho ht = new HorarioTrabalho();
-            ht.setProfissional(profissional);
-            ht.setDiaSemana(DayOfWeek.valueOf(dto.getDiaSemana()));
-            ht.setHoraInicio(LocalTime.parse(dto.getHoraInicio()));
-            ht.setHoraFim(LocalTime.parse(dto.getHoraFim()));
-            return ht;
-        }).toList();
-
-        repo.saveAll(novosHorarios);
-    }
+  
+  private final HorarioTrabalhoRepository repo;
+  private final ProfissionalRepository profissionalRepo;
+  
+  /**
+  * Atualiza a escala de trabalho do barbeiro substituindo de forma atómica 
+  * todos os turnos anteriores pelos novos configurados no painel.
+  */
+  @Transactional
+  public void atualizarHorariosDoProfissional(Long profissionalId, List<HorarioTrabalhoDTO> horariosDTO) {
+    Profissional profissional = profissionalRepo.findById(profissionalId)
+    .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
+    
+    // Limpa a escala antiga para evitar duplicidades ou conflitos de chaves
+    repo.deleteByProfissionalId(profissionalId);
+    
+    // Mapeia e converte o payload vindo do React para as entidades JPA
+    List<HorarioTrabalho> novosHorarios = horariosDTO.stream().map(dto -> {
+      HorarioTrabalho ht = new HorarioTrabalho();
+      ht.setProfissional(profissional);
+      ht.setDiaSemana(DayOfWeek.valueOf(dto.getDiaSemana()));
+      ht.setHoraInicio(LocalTime.parse(dto.getHoraInicio()));
+      ht.setHoraFim(LocalTime.parse(dto.getHoraFim()));
+      return ht;
+    }).toList();
+    
+    repo.saveAll(novosHorarios);
+  }
 }

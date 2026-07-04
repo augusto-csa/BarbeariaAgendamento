@@ -2,17 +2,28 @@ import { useState } from "react";
 import { api } from "../services/api";
 import { Link } from "react-router-dom";
 
+/**
+ * Tela de autenticação da aplicação.
+ * Oferece suporte para login local via credenciais e login social (OAuth2).
+ */
 export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Delega o fluxo de autenticação social para o backend (Spring Security).
+   */
   const handleGoogleLogin = () => {
     window.location.href =
       "http://localhost:8080/api/oauth2/authorization/google";
   };
 
+  /**
+   * Autentica via JWT. Em caso de sucesso, força o recarregamento da página para
+   * que a raiz da aplicação busque o perfil atualizado e defina a rota correta (Cliente vs Barbeiro).
+   */
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -20,7 +31,6 @@ export function Login() {
 
     try {
       await api.post("/auth/login", { email, password });
-      // Redireciona para a raiz. O routes.tsx fará a triagem entre Cliente ou Barbeiro
       window.location.href = "/";
     } catch (err) {
       setError("Email ou senha incorretos.");
@@ -46,6 +56,7 @@ export function Login() {
             Premium haircuts & beard grooming.
           </p>
         </div>
+
         <div className="mb-8 space-y-4">
           <form
             onSubmit={handleEmailLogin}
