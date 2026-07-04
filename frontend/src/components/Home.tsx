@@ -22,26 +22,60 @@ export function Home({ user }: { user: AuthUser }) {
       .catch((err) => console.error("Erro ao carregar os barbeiros", err));
   }, []);
 
+  const getInitialsAvatar = (name: string) => {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111827&color=ffffff&bold=true`;
+  };
+
+  // FUNÇÃO DE LOGOUT: Avisa o backend e limpa a sessão do navegador
+  const handleLogout = async () => {
+    try {
+      // Tenta derrubar a sessão nos endpoints mais comuns do Spring Security
+      await api.post("/auth/logout").catch(() => api.post("/logout"));
+    } catch (err) {
+      console.warn("Sessão encerrada no cliente.");
+    } finally {
+      // Força o recarregamento para limpar estados globais e vai para o login
+      window.location.href = "/login";
+    }
+  };
+
   return (
-    <div className="max-w-md mx-auto bg-[#f9fafb] min-h-screen p-6 font-sans text-gray-800">
+    <div className="max-w-md mx-auto bg-[#f9fafb] min-h-screen p-6 font-sans text-gray-800 pb-24">
+      {/* Cabeçalho do Cliente */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <p className="text-gray-500 text-sm font-medium">Olá,</p>
           <h1 className="text-2xl font-bold text-gray-900">{user.nome}</h1>
         </div>
-        <div className="w-12 h-12 rounded-full overflow-hidden shadow-sm border-2 border-white bg-gray-200">
-          <img
-            src={
-              user.fotoUrl ||
-              `https://ui-avatars.com/api/?name=${user.nome}&background=random`
-            }
-            alt="User Profile"
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-          />
+
+        {/* Ações de Perfil */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate("/meus-agendamentos")}
+            className="text-xs font-bold bg-gray-100 text-gray-700 px-3 py-2 rounded-xl hover:bg-gray-200 transition"
+          >
+            Agenda
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="text-xs font-bold bg-red-50 text-red-600 px-3 py-2 rounded-xl hover:bg-red-100 transition"
+          >
+            Sair
+          </button>
+
+          <div className="w-12 h-12 rounded-full overflow-hidden shadow-sm border-2 border-white bg-gray-200 ml-1">
+            <img
+              src={user.fotoUrl || getInitialsAvatar(user.nome)}
+              alt="User Profile"
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+          </div>
         </div>
       </div>
 
+      {/* Barra de Busca */}
       <div className="relative mb-8 shadow-sm rounded-2xl">
         <input
           type="text"
@@ -59,6 +93,7 @@ export function Home({ user }: { user: AuthUser }) {
         </h2>
       </div>
 
+      {/* Lista de Barbeiros */}
       <div className="space-y-4">
         {barbers.length === 0 ? (
           <p className="text-gray-500 text-center py-4">
@@ -73,10 +108,7 @@ export function Home({ user }: { user: AuthUser }) {
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <img
-                    src={
-                      barber.fotoUrl ||
-                      `https://ui-avatars.com/api/?name=${barber.nome}&background=random`
-                    }
+                    src={barber.fotoUrl || getInitialsAvatar(barber.nome)}
                     alt={barber.nome}
                     className="w-14 h-14 rounded-full object-cover border-2 border-gray-50"
                   />
@@ -95,6 +127,7 @@ export function Home({ user }: { user: AuthUser }) {
                   </div>
                 </div>
               </div>
+
               <button
                 onClick={() => navigate(`/book/${barber.id}`)}
                 className="bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-gray-700 transition-colors shadow-sm"

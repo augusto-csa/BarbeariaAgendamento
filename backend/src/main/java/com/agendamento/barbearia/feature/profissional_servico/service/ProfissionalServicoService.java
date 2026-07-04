@@ -45,4 +45,26 @@ public class ProfissionalServicoService {
                 .map(mapper::toResponseDTO)
                 .toList();
     }
+
+    @Transactional
+    public void atualizarServicosDoProfissional(Long profissionalId, List<Long> servicoIds) {
+        Profissional profissional = profissionalRepository.findById(profissionalId)
+                .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
+
+        // 1. Limpa todos os serviços que o barbeiro tinha antes
+        repo.deleteByProfissionalId(profissionalId);
+
+        // 2. Salva os novos serviços selecionados
+        List<ProfissionalServico> novosVinculos = servicoIds.stream().map(servicoId -> {
+            Servico servico = servicoRepository.findById(servicoId)
+                    .orElseThrow(() -> new RuntimeException("Serviço não encontrado"));
+            
+            ProfissionalServico ps = new ProfissionalServico();
+            ps.setProfissional(profissional);
+            ps.setServico(servico);
+            return ps;
+        }).toList();
+
+        repo.saveAll(novosVinculos);
+    }
 }

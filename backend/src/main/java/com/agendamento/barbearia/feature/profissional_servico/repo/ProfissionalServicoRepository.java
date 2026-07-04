@@ -10,4 +10,5 @@ import java.util.List;
 public interface ProfissionalServicoRepository extends JpaRepository<ProfissionalServico, Long> {
     @Query("SELECT ps FROM ProfissionalServico ps JOIN FETCH ps.servico WHERE ps.profissional.id = :profissionalId")
     List<ProfissionalServico> findByProfissionalId(@Param("profissionalId") Long profissionalId);
+    void deleteByProfissionalId(Long profissionalId);
 }

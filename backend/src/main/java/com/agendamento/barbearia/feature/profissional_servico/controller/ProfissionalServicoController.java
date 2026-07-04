@@ -34,5 +34,11 @@ public class ProfissionalServicoController {
         return ResponseEntity.ok(service.buscarServicosDoBarbeiro(profissionalId));
     }
     
-    // No futuro, você pode adicionar o DELETE aqui para remover um vínculo!
+    @PostMapping("/vincular-em-lote/{profissionalId}")
+public ResponseEntity<Void> vincularServicos(@PathVariable Long profissionalId, @RequestBody List<Long> servicoIds) {
+    // Apaga os vínculos antigos (se houver) e cria os novos
+    service.atualizarServicosDoProfissional(profissionalId, servicoIds);
+    return ResponseEntity.ok().build();
+}
+
 }

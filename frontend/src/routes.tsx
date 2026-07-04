@@ -6,6 +6,7 @@ import { Booking } from "./components/Booking";
 import { BarberDashboard } from "./components/BarberDashboard";
 import type { AuthUser } from "./App";
 import type { JSX } from "react/jsx-runtime";
+import { ClientAppointments } from "./components/ClientAppointments";
 
 interface PrivateRouteProps {
   user: AuthUser | null;
@@ -88,6 +89,15 @@ export function AppRoutes({ user }: AppRoutesProps) {
         element={
           <PrivateRoute user={user} allowedRoles={["BARBEIRO", "ADMIN"]}>
             <BarberDashboard user={user} />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/meus-agendamentos"
+        element={
+          <PrivateRoute user={user} allowedRoles={["CLIENTE", "ADMIN"]}>
+            <ClientAppointments user={user} />
           </PrivateRoute>
         }
       />

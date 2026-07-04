@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,5 +47,16 @@ public class AgendamentoController {
     @GetMapping("/barbeiro/{profissionalId}")
     public List<AgendamentoResponseDTO> listarAgendaBarbeiro(@PathVariable Long profissionalId) {
         return service.buscarAgendaDoBarbeiro(profissionalId);
+    }
+
+    @GetMapping("/cliente/{clienteId}")
+    public List<AgendamentoResponseDTO> listarAgendaCliente(@PathVariable Long clienteId) {
+        return service.buscarAgendaDoCliente(clienteId);
+    }
+
+    @PatchMapping("/{id}/cancelar")
+    public ResponseEntity<Void> cancelarAgendamento(@PathVariable Long id) {
+        service.cancelar(id);
+        return ResponseEntity.noContent().build(); // Retorna Status 204 (Sucesso sem corpo)
     }
 }
