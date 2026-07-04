@@ -8,4 +8,5 @@ import java.util.List;
 public interface HorarioTrabalhoRepository extends JpaRepository<HorarioTrabalho, Long> {
     List<HorarioTrabalho> findByProfissionalIdAndDiaSemana(Long profissionalId, DayOfWeek diaSemana);
     List<HorarioTrabalho> findByProfissionalId(Long profissionalId);
+    void deleteByProfissionalId(Long profissionalId);
 }

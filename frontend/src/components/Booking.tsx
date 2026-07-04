@@ -23,6 +23,16 @@ const dayMap: Record<string, number> = {
   SATURDAY: 6,
 };
 
+const nomeDias: Record<number, string> = {
+  0: "Domingo",
+  1: "Segunda",
+  2: "Terça",
+  3: "Quarta",
+  4: "Quinta",
+  5: "Sexta",
+  6: "Sábado",
+};
+
 export function Booking({ user }: { user: AuthUser }) {
   const { barberId } = useParams();
   const navigate = useNavigate();
@@ -191,6 +201,20 @@ export function Booking({ user }: { user: AuthUser }) {
 
       <h2 className="text-xl font-black text-gray-900 mb-4">Data & Hora</h2>
 
+      {/* NOVO: Aviso de dias de trabalho */}
+      {diasTrabalho.length > 0 && (
+        <div className="mb-4 p-3 bg-blue-50 text-blue-700 rounded-xl text-xs font-bold border border-blue-100 flex items-center gap-2">
+          <span>ℹ️</span>
+          <span>
+            Atende:{" "}
+            {diasTrabalho
+              .sort()
+              .map((d) => nomeDias[d])
+              .join(", ")}
+          </span>
+        </div>
+      )}
+      {/* Escolha da Data */}
       <div className="mb-6">
         <input
           type="date"
