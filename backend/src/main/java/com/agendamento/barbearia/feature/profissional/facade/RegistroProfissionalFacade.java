@@ -11,21 +11,24 @@ import com.agendamento.barbearia.feature.usuario.service.UsuarioService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+/**
+* Facade responsável por orquestrar o registro de um novo barbeiro, 
+* unificando a criação das credenciais de acesso e do perfil profissional.
+*/
 @Component
 @RequiredArgsConstructor
 public class RegistroProfissionalFacade {
-
-    private final UsuarioService usuarioService;
-    private final ProfissionalService profissionalService;
-
-    // A anotação mais importante: Ou salva TUDO, ou não salva NADA.
-    @Transactional 
-    public ProfissionalResponseDTO registrarNovoBarbeiro(ProfissionalRequestDTO request) {
-        
-        // 1. Pede ao UsuarioService para criar a conta de acesso
-        Usuario novoUsuario = usuarioService.criarContaBarbeiro(request);
-
-        // 2. Passa o Usuário já salvo (com ID) para o ProfissionalService fazer a parte dele
-        return profissionalService.criarPerfilProfissional(request, novoUsuario);
-    }
+  
+  private final UsuarioService usuarioService;
+  private final ProfissionalService profissionalService;
+  
+  /**
+  * Executa o cadastro completo de forma atômica (transacional). 
+  * Se houver falha na criação do perfil profissional, a criação do usuário é revertida (rollback).
+  */
+  @Transactional 
+  public ProfissionalResponseDTO registrarNovoBarbeiro(ProfissionalRequestDTO request) {
+    Usuario novoUsuario = usuarioService.criarContaBarbeiro(request);
+    return profissionalService.criarPerfilProfissional(request, novoUsuario);
+  }
 }

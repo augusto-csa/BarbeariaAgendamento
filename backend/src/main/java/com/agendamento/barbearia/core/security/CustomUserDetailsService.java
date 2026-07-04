@@ -12,18 +12,17 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-
-    private final UsuarioRepository usuarioRepository;
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
-
-        // Converte o nosso Usuario para o formato que o Spring Security entende
-        return User.withUsername(usuario.getEmail())
-                .password(usuario.getSenha())
-                .roles(usuario.getRole())
-                .build();
-    }
+  
+  private final UsuarioRepository usuarioRepository;
+  
+  @Override
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    Usuario usuario = usuarioRepository.findByEmail(email)
+    .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+    
+    return User.withUsername(usuario.getEmail())
+    .password(usuario.getSenha())
+    .roles(usuario.getRole())
+    .build();
+  }
 }

@@ -15,30 +15,37 @@ import com.agendamento.barbearia.feature.profissional_servico.service.Profission
 
 import lombok.RequiredArgsConstructor;
 
+/**
+* Endpoint responsável por gerenciar a associação entre os profissionais (barbeiros) 
+* e os serviços que eles estão habilitados a realizar.
+*/
 @RestController
 @RequestMapping("/profissionais-servicos")
 @RequiredArgsConstructor
 public class ProfissionalServicoController {
-
-    private final ProfissionalServicoService service;
-
-    // POST: Cria o vínculo
-    @PostMapping
-    public ResponseEntity<ProfissionalServicoResponseDTO> vincular(@RequestBody ProfissionalServicoRequestDTO request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.vincular(request));
-    }
-
-    // GET: Traz os serviços de um barbeiro (Ex: /profissionais-servicos/barbeiro/1)
-    @GetMapping("/barbeiro/{profissionalId}")
-    public ResponseEntity<List<ProfissionalServicoResponseDTO>> listarServicosDoBarbeiro(@PathVariable Long profissionalId) {
-        return ResponseEntity.ok(service.buscarServicosDoBarbeiro(profissionalId));
-    }
-    
-    @PostMapping("/vincular-em-lote/{profissionalId}")
-public ResponseEntity<Void> vincularServicos(@PathVariable Long profissionalId, @RequestBody List<Long> servicoIds) {
-    // Apaga os vínculos antigos (se houver) e cria os novos
+  
+  private final ProfissionalServicoService service;
+  
+  @PostMapping
+  public ResponseEntity<ProfissionalServicoResponseDTO> vincular(@RequestBody ProfissionalServicoRequestDTO request) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(service.vincular(request));
+  }
+  
+  /**
+  * Retorna a lista de todos os serviços que um profissional específico realiza.
+  */
+  @GetMapping("/barbeiro/{profissionalId}")
+  public ResponseEntity<List<ProfissionalServicoResponseDTO>> listarServicosDoBarbeiro(@PathVariable Long profissionalId) {
+    return ResponseEntity.ok(service.buscarServicosDoBarbeiro(profissionalId));
+  }
+  
+  /**
+  * Atualiza os serviços oferecidos pelo profissional em lote (Bulk), 
+  * apagando as configurações antigas e salvando a nova seleção de forma atômica.
+  */
+  @PostMapping("/vincular-em-lote/{profissionalId}")
+  public ResponseEntity<Void> vincularServicos(@PathVariable Long profissionalId, @RequestBody List<Long> servicoIds) {
     service.atualizarServicosDoProfissional(profissionalId, servicoIds);
     return ResponseEntity.ok().build();
-}
-
+  }
 }

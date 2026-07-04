@@ -15,20 +15,23 @@ import com.agendamento.barbearia.feature.servico.service.ServicoService;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+* Endpoint para gerenciamento do catálogo mestre de serviços da barbearia (ex: Corte, Barba, Sobrancelha).
+*/
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/servicos")
 public class ServicoController {
-
-    private final ServicoService service;
-
-    @PostMapping
-    public ResponseEntity<ServicoResponseDTO> criarServico(@RequestBody ServicoRequestDTO request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.save(request));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ServicoResponseDTO>> listarServicos() {
-        return ResponseEntity.ok(service.findAll());
-    }
+  
+  private final ServicoService service;
+  
+  @PostMapping
+  public ResponseEntity<ServicoResponseDTO> criarServico(@RequestBody ServicoRequestDTO request) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(service.save(request));
+  }
+  
+  @GetMapping
+  public ResponseEntity<List<ServicoResponseDTO>> listarServicos() {
+    return ResponseEntity.ok(service.findAll());
+  }
 }

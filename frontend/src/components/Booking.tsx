@@ -33,6 +33,11 @@ const nomeDias: Record<number, string> = {
   6: "Sábado",
 };
 
+/**
+ * Componente de fluxo de agendamento (Booking) para o cliente.
+ * Gerencia a seleção de serviços, validação de dias de trabalho do profissional,
+ * e consulta dinâmica de horários livres no backend.
+ */
 export function Booking({ user }: { user: AuthUser }) {
   const { barberId } = useParams();
   const navigate = useNavigate();
@@ -50,6 +55,10 @@ export function Booking({ user }: { user: AuthUser }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  /**
+   * Carrega os serviços que o profissional realiza e a sua escala de trabalho (dias da semana)
+   * assim que o componente é montado.
+   */
   useEffect(() => {
     api
       .get(`/profissionais-servicos/barbeiro/${barberId}`)
@@ -67,6 +76,10 @@ export function Booking({ user }: { user: AuthUser }) {
       );
   }, [barberId]);
 
+  /**
+   * Dispara a consulta de horários disponíveis no backend sempre que uma data válida é selecionada.
+   * O backend calcula as vagas considerando a duração dos serviços e os agendamentos já existentes.
+   */
   useEffect(() => {
     if (data && barberId) {
       setLoadingHorarios(true);
@@ -88,6 +101,10 @@ export function Booking({ user }: { user: AuthUser }) {
     );
   };
 
+  /**
+   * Intercepta a mudança de data para realizar validação no lado do cliente (Client-side validation).
+   * Impede que o usuário selecione um dia da semana em que o barbeiro não possui escala configurada.
+   */
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.value;
 
@@ -113,6 +130,9 @@ export function Booking({ user }: { user: AuthUser }) {
     setData(selected);
   };
 
+  /**
+   * Consolida os dados e envia o pedido de agendamento ao backend.
+   */
   const handleBooking = async () => {
     if (selectedServices.length === 0 || !data || !hora) {
       setError("Selecione os serviços, a data e a hora.");
@@ -201,7 +221,6 @@ export function Booking({ user }: { user: AuthUser }) {
 
       <h2 className="text-xl font-black text-gray-900 mb-4">Data & Hora</h2>
 
-      {/* NOVO: Aviso de dias de trabalho */}
       {diasTrabalho.length > 0 && (
         <div className="mb-4 p-3 bg-blue-50 text-blue-700 rounded-xl text-xs font-bold border border-blue-100 flex items-center gap-2">
           <span>ℹ️</span>
@@ -214,7 +233,7 @@ export function Booking({ user }: { user: AuthUser }) {
           </span>
         </div>
       )}
-      {/* Escolha da Data */}
+
       <div className="mb-6">
         <input
           type="date"

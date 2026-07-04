@@ -17,16 +17,16 @@ import lombok.Data;
 @Entity
 @Table(name = "profissionais_servicos")
 public class ProfissionalServico {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profissional_id", nullable = false)
-    private Profissional profissional;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "servico_id", nullable = false)
-    private Servico servico;
+  
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "profissional_id", nullable = false)
+  private Profissional profissional;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "servico_id", nullable = false)
+  private Servico servico;
 }

@@ -12,33 +12,42 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+* Camada de serviço responsável pelas regras de negócio e gerenciamento dos perfis dos profissionais (barbeiros).
+*/
 @Service
 @RequiredArgsConstructor
 public class ProfissionalService {
-
-    private final ProfissionalRepository repository;
-    private final ProfissionalMapper mapper;
-
-    public List<ProfissionalResponseDTO> listarTodos() {
-        return repository.findlAllComAgendamentos()
-                .stream()
-                .map(mapper::toResponseDTO)
-                .toList();
-    }
-
-    public ProfissionalResponseDTO buscarPorId(Long id) {
-        Profissional profissional = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
-                
-        return mapper.toResponseDTO(profissional);
-    }
-
-    // Dentro do ProfissionalService
-    public ProfissionalResponseDTO criarPerfilProfissional(ProfissionalRequestDTO request, Usuario usuario) {
-        Profissional p = new Profissional();
-        p.setBiografia(request.getBiografia());
-        p.setUsuario(usuario);
-        Profissional salvo = repository.save(p);
-        return mapper.toResponseDTO(salvo);
-    }
+  
+  private final ProfissionalRepository repository;
+  private final ProfissionalMapper mapper;
+  
+  /**
+  * Retorna a lista de todos os profissionais cadastrados, mapeando as entidades para DTOs.
+  */
+  public List<ProfissionalResponseDTO> listarTodos() {
+    return repository.findlAllComAgendamentos()
+    .stream()
+    .map(mapper::toResponseDTO)
+    .toList();
+  }
+  
+  public ProfissionalResponseDTO buscarPorId(Long id) {
+    Profissional profissional = repository.findById(id)
+    .orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
+    
+    return mapper.toResponseDTO(profissional);
+  }
+  
+  /**
+  * Vincula as informações específicas de trabalho (perfil profissional) a uma conta de usuário recém-criada.
+  */
+  public ProfissionalResponseDTO criarPerfilProfissional(ProfissionalRequestDTO request, Usuario usuario) {
+    Profissional p = new Profissional();
+    p.setBiografia(request.getBiografia());
+    p.setUsuario(usuario);
+    
+    Profissional salvo = repository.save(p);
+    return mapper.toResponseDTO(salvo);
+  }
 }

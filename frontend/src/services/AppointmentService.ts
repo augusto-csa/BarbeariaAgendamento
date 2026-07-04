@@ -1,6 +1,4 @@
 import { api } from "./api";
-
-// Interface mapeando exatamente o que vem do nosso backend Java
 export interface AppointmentResponse {
   id: number;
   dataHora: string;

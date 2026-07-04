@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ProfissionalServicoResponseDTO {
-    private Long id;
-    private Long profissionalId;
-    private ServicoResponseDTO servico; 
+  private Long id;
+  private Long profissionalId;
+  private ServicoResponseDTO servico; 
 }
