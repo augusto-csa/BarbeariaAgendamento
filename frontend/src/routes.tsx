@@ -2,36 +2,110 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./components/Login";
 import { Register } from "./components/Register";
 import { Home } from "./components/Home";
+import { Booking } from "./components/Booking";
+import { BarberDashboard } from "./components/BarberDashboard";
+import type { AuthUser } from "./App";
 import type { JSX } from "react/jsx-runtime";
+import { ClientAppointments } from "./components/ClientAppointments";
 
-// Criamos um mini-componente para proteger as rotas que exigem login
 interface PrivateRouteProps {
-  isAuthenticated: boolean;
+  user: AuthUser | null;
+  allowedRoles?: string[];
   children: JSX.Element;
 }
 
-const PrivateRoute = ({ isAuthenticated, children }: PrivateRouteProps) => {
-  return isAuthenticated ? children : <Navigate to="/login" />;
+/**
+ * Componente de proteção de rotas (Route Guard).
+ * Intercepta o acesso garantindo que o usuário esteja logado e possua o nível de acesso (Role) exigido.
+ * Caso contrário, redireciona para a página de login ou para a rota adequada ao seu perfil.
+ */
+const PrivateRoute = ({ user, allowedRoles, children }: PrivateRouteProps) => {
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return user.role === "BARBEIRO" ? (
+      <Navigate to="/painel-barbeiro" replace />
+    ) : (
+      <Navigate to="/" replace />
+    );
+  }
+
+  return children;
 };
 
-// Este é o componente principal de Rotas que será exportado
 interface AppRoutesProps {
-  isAuthenticated: boolean;
+  user: AuthUser | null;
 }
 
-export function AppRoutes({ isAuthenticated }: AppRoutesProps) {
+/**
+ * Configuração central do roteamento da aplicação.
+ * Implementa a lógica de triagem inicial: se um usuário autenticado tentar acessar a tela de login/registro,
+ * ele é automaticamente redirecionado para o seu respectivo painel (Home para Clientes, Dashboard para Barbeiros).
+ */
+export function AppRoutes({ user }: AppRoutesProps) {
   return (
     <Routes>
-      {/* Rotas Públicas (Qualquer um pode acessar) */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route
+        path="/login"
+        element={
+          user ? (
+            <Navigate
+              to={user.role === "BARBEIRO" ? "/painel-barbeiro" : "/"}
+              replace
+            />
+          ) : (
+            <Login />
+          )
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          user ? (
+            <Navigate
+              to={user.role === "BARBEIRO" ? "/painel-barbeiro" : "/"}
+              replace
+            />
+          ) : (
+            <Register />
+          )
+        }
+      />
 
-      {/* Rotas Privadas (Exigem Login) */}
       <Route
         path="/"
         element={
-          <PrivateRoute isAuthenticated={isAuthenticated}>
-            <Home />
+          <PrivateRoute user={user} allowedRoles={["CLIENTE", "ADMIN"]}>
+            <Home user={user} />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/book/:barberId"
+        element={
+          <PrivateRoute user={user} allowedRoles={["CLIENTE", "ADMIN"]}>
+            <Booking user={user} />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/painel-barbeiro"
+        element={
+          <PrivateRoute user={user} allowedRoles={["BARBEIRO", "ADMIN"]}>
+            <BarberDashboard user={user} />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/meus-agendamentos"
+        element={
+          <PrivateRoute user={user} allowedRoles={["CLIENTE", "ADMIN"]}>
+            <ClientAppointments user={user} />
           </PrivateRoute>
         }
       />

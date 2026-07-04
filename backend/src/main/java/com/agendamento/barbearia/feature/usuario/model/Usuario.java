@@ -29,5 +29,8 @@ public class Usuario {
   private String senha;
   
   @Column(nullable = false)
-  private String role; // CLIENTE, BARBEIRO, ADMIN
+  private String role;
+  
+  @Column(length = 1000, name = "foto_url")
+  private String fotoUrl;
 }

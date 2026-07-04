@@ -6,8 +6,8 @@ import lombok.Data;
 
 @Data
 public class AgendamentoRequestDTO {
-    private Long clienteId;
-    private Long profissionalId;
-    private LocalDateTime dataHora;
-    private List<Long> servicoIds;
+  private Long clienteId;
+  private Long profissionalId;
+  private LocalDateTime dataHora;
+  private List<Long> servicoIds;
 }

@@ -22,33 +22,30 @@ import lombok.Data;
 @Entity
 @Table(name = "agendamentos")
 public class Agendamento {
+  
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    // Muitos agendamentos pertencem a um Cliente (Usuario)
-    @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
-    private Usuario cliente;
-
-    // Muitos agendamentos pertencem a um Profissional
-    @ManyToOne
-    @JoinColumn(name = "profissional_id", nullable = false)
-    private Profissional profissional;
-
-    @Column(name = "data_hora", nullable = false)
-    private LocalDateTime dataHora;
-
-    @Column(nullable = false)
-    private String status; // PENDENTE, CONFIRMADO, CANCELADO
-
-    // A Mágica do N:M (A tabela de junção invisível)
-    @ManyToMany
-    @JoinTable(
-        name = "agendamentos_servicos",
-        joinColumns = @JoinColumn(name = "agendamento_id"),
-        inverseJoinColumns = @JoinColumn(name = "servico_id")
-    )
-    private List<Servico> servicos;
+  @ManyToOne
+  @JoinColumn(name = "cliente_id", nullable = false)
+  private Usuario cliente;
+  
+  @ManyToOne
+  @JoinColumn(name = "profissional_id", nullable = false)
+  private Profissional profissional;
+  
+  @Column(name = "data_hora", nullable = false)
+  private LocalDateTime dataHora;
+  
+  @Column(nullable = false)
+  private String status;
+  
+  @ManyToMany
+  @JoinTable(
+    name = "agendamentos_servicos",
+    joinColumns = @JoinColumn(name = "agendamento_id"),
+    inverseJoinColumns = @JoinColumn(name = "servico_id")
+  )
+  private List<Servico> servicos;
 }

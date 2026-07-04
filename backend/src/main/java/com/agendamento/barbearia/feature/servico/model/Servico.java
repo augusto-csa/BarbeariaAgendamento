@@ -13,19 +13,20 @@ import lombok.Data;
 @Entity
 @Table(name = "servicos")
 public class Servico {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
-    private String nome;
-
-    private String descricao;
-
-    @Column(nullable = false)
-    private BigDecimal preco;
-
-    @Column(name = "duracao_minutos", nullable = false)
-    private Integer duracaoMinutos;
+  
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  
+  @Column(nullable = false, length = 100)
+  private String nome;
+  
+  @Column(length = 255)
+  private String descricao;
+  
+  @Column(nullable = false, precision = 10, scale = 2)
+  private BigDecimal preco;
+  
+  @Column(name = "duracao_minutos", nullable = false)
+  private Integer duracaoMinutos;
 }
